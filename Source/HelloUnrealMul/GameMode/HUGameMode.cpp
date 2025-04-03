@@ -3,6 +3,21 @@
 
 #include "GameMode/HUGameMode.h"
 #include "GameState/HUGameState.h"
+#include "PlayerState/HUPlayerState.h"
+
+APlayerController* AHUGameMode::Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
+{
+	APlayerController* Controller = Super::Login(NewPlayer, InRemoteRole, Portal, Options, UniqueId, ErrorMessage);
+	return Controller;
+}
+
+void AHUGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	AHUPlayerState* HUPlayerState = Cast<AHUPlayerState>(NewPlayer->PlayerState);
+	HUPlayerState->SetTeamID(AddAndGetTeamCount());
+}
 
 AHUGameMode::AHUGameMode()
 {
@@ -11,8 +26,6 @@ AHUGameMode::AHUGameMode()
 	{
 		DefaultPawnClass = DefaultPawnRef.Class;
 	}
-
-	TeamCount = 0;
 }
 
 int32 AHUGameMode::AddAndGetTeamCount()

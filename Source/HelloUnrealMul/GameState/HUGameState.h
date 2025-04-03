@@ -15,7 +15,7 @@ UCLASS()
 class HELLOUNREALMUL_API AHUGameState : public AGameStateBase
 {
 	GENERATED_BODY()
-	
+
 // Add Player State Section
 protected:
 	virtual void AddPlayerState(APlayerState* PlayerState) override;

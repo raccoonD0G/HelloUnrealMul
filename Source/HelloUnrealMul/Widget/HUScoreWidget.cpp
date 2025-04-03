@@ -33,6 +33,8 @@ void UHUScoreWidget::PlayerStateAdded(APlayerState* AddedPlayerState)
 		}
 		else
 		{
+			HUPlayerState->BindOnScoreChange(this, &UHUScoreWidget::UpdateScore);
+			HUPlayerState->BindOnTeamIDChange(this, &UHUScoreWidget::ResetTeamNameScores);
 			TeamNameScores.Add(HUPlayerState->GetTeamID(), HUPlayerState->GetCurrentScore());
 		}
 	}
@@ -95,15 +97,13 @@ void UHUScoreWidget::InitWithPlayerState()
 		if (GameState != nullptr)
 		{
 			TArray<APlayerState*>& PlayerStates = GameState->PlayerArray;
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("%d"), PlayerStates.Num()));
 			for (const auto& PlayerState : PlayerStates)
 			{
 				AHUPlayerState* HUPlayerState = Cast<AHUPlayerState>(PlayerState);
 				if (HUPlayerState != nullptr)
 				{
 					HUPlayerState->BindOnScoreChange(this, &UHUScoreWidget::UpdateScore);
-					HUPlayerState->BindOnTeamIDChange(this, &UHUScoreWidget::ResetTeamNameScoresB);
-					HUPlayerState->BindOnPlayerStateInit(this, &UHUScoreWidget::ResetTeamNameScoresA);
+					HUPlayerState->BindOnTeamIDChange(this, &UHUScoreWidget::ResetTeamNameScores);
 					TeamNameScores.Add(HUPlayerState->GetTeamID(), HUPlayerState->GetCurrentScore());
 				}
 			}
@@ -116,7 +116,7 @@ void UHUScoreWidget::InitWithPlayerState()
 	GetWorld()->GetTimerManager().SetTimer(InitWithPlayerStateTimerHandle, this, &UHUScoreWidget::InitWithPlayerState, 0.1f, false);
 }
 
-void UHUScoreWidget::ResetTeamNameScoresA()
+void UHUScoreWidget::ResetTeamNameScores()
 {
 	UWorld* World = GetWorld();
 	if (World != nullptr)
@@ -140,14 +140,13 @@ void UHUScoreWidget::ResetTeamNameScoresA()
 	}
 }
 
-void UHUScoreWidget::ResetTeamNameScoresB(int32 TeamID)
+void UHUScoreWidget::ResetTeamNameScores(int32 InTeamID)
 {
-	ResetTeamNameScoresA();
+	ResetTeamNameScores();
 }
 
 void UHUScoreWidget::SetScoreText()
-{
-	FString ScoresStr = FString();
+{FString ScoresStr = FString();
 
 	for (const auto& TeamNameScore : TeamNameScores)
 	{

@@ -2,7 +2,6 @@
 
 
 #include "PlayerState/HUPlayerState.h"
-#include "GameMode/HUGameMode.h"
 #include "Net/UnrealNetwork.h"
 
 void AHUPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -18,26 +17,16 @@ void AHUPlayerState::PostInitializeComponents()
 
 	if (HasAuthority())
 	{
-		UWorld* World = GetWorld();
-		if (World != nullptr)
-		{
-			AHUGameMode* GameMode = Cast<AHUGameMode>(World->GetAuthGameMode());
-			if (GameMode != nullptr)
-			{
-				TeamID = GameMode->AddAndGetTeamCount();
-				Server_SetScore(0);
-			}
-		}
+		Server_SetScore(0);
 	}
 }
 
 void AHUPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-	OnPlayerStateInit.Broadcast();
-	OnCurrentScoreChange.Broadcast(TeamID, CurrentScore);
-	OnTeamIDChange.Broadcast(TeamID);
 }
+
+
 
 AHUPlayerState::AHUPlayerState()
 {
@@ -80,10 +69,7 @@ void AHUPlayerState::SetScore(int32 InCurrentScore)
 
 void AHUPlayerState::OnRep_TeamID()
 {
-	if (OnTeamIDChange.IsBound())
-	{
-		OnTeamIDChange.Broadcast(TeamID);
-	}
+	OnTeamIDChange.Broadcast(TeamID);
 }
 
 void AHUPlayerState::OnRep_CurrentScore()

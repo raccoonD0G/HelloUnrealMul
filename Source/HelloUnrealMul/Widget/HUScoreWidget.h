@@ -41,9 +41,9 @@ protected:
 	void InitWithPlayerState();
 
 protected:
-	void ResetTeamNameScoresA();
+	void ResetTeamNameScores();
 
-	void ResetTeamNameScoresB(int32 TeamID);
+	void ResetTeamNameScores(int32 InTeamID);
 
 	FTimerHandle InitWithPlayerStateTimerHandle;
 	FTimerHandle InitWithGameStateTimerHandle;

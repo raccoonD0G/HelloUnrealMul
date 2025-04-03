@@ -7,7 +7,6 @@
 #include "HUPlayerState.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnCurrentScoreChange, int32 /* TeamID */, int32 /* InScore */);
-DECLARE_MULTICAST_DELEGATE(FOnPlayerStateInit);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnTeamIDChange, int32 /* InTeamID */);
 /**
  * 
@@ -37,12 +36,6 @@ public:
 	{
 		OnCurrentScoreChange.Add(FOnCurrentScoreChange::FDelegate::CreateUObject(InClass, Func));
 	}
-	 
-	template<typename T>
-	void BindOnPlayerStateInit(T* InClass, void (T::*Func)())
-	{
-		OnPlayerStateInit.Add(FOnPlayerStateInit::FDelegate::CreateUObject(InClass, Func));
-	}
 
 	template<typename T>
 	void BindOnTeamIDChange(T* InClass, void (T::*Func)(int32))
@@ -71,8 +64,6 @@ protected:
 	UFUNCTION()
 	void OnRep_TeamID();
 
-	static int32 TeamCount;
-
 	UPROPERTY(VisibleAnywhere, ReplicatedUsing = OnRep_CurrentScore)
 	int32 CurrentScore;
 
@@ -81,5 +72,7 @@ protected:
 
 	FOnTeamIDChange OnTeamIDChange;
 	FOnCurrentScoreChange OnCurrentScoreChange;
-	FOnPlayerStateInit OnPlayerStateInit;
+
+public:
+	FORCEINLINE void SetTeamID(int32 InTeamID) { TeamID = InTeamID; }
 };
